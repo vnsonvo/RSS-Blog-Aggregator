@@ -21,6 +21,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /v1/readiness", handlerReadiness)
+	mux.HandleFunc("GET /v1/err", handlerErr)
+
 	corsMux := middlewareCors(mux)
 
 	var server = &http.Server{
