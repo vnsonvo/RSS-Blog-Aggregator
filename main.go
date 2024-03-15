@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -15,5 +15,19 @@ func main() {
 	}
 
 	port := os.Getenv("PORT")
-	fmt.Println(port)
+	if port == "" {
+		log.Fatal("PORT not found in the environment")
+	}
+
+	mux := http.NewServeMux()
+
+	corsMux := middlewareCors(mux)
+
+	var server = &http.Server{
+		Addr:    ":" + port,
+		Handler: corsMux,
+	}
+
+	log.Printf("Serving on port: %s\n", port)
+	log.Fatal(server.ListenAndServe())
 }
