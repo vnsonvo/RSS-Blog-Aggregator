@@ -39,7 +39,26 @@ func (apiCfg *apiConfig) handlerCreateFeed(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, databaseFeedToFeed(newFeed))
+	feedFollow, err := apiCfg.DB.CreateFeedFollow(req.Context(), database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		UserID:    user.ID,
+		FeedID:    newFeed.ID,
+	})
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't create feed follows: %s", err))
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, struct {
+		Feed       Feed       `json:"feed"`
+		FeedFollow FeedFollow `json:"feed_follow"`
+	}{
+		Feed:       databaseFeedToFeed(newFeed),
+		FeedFollow: databaseFeedFollowToFeedFollow(feedFollow),
+	})
 }
 
 func (apiCfg *apiConfig) handlerGetFeeds(w http.ResponseWriter, req *http.Request) {
