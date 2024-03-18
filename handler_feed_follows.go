@@ -39,3 +39,15 @@ func (apiCfg *apiConfig) handlerCreateFeedFollow(w http.ResponseWriter, req *htt
 
 	respondWithJSON(w, http.StatusCreated, databaseFeedFollowToFeedFollow(feedFollow))
 }
+
+func (apiCfg *apiConfig) handlerGetFeedFollow(w http.ResponseWriter, req *http.Request, user database.User) {
+
+	feedFollow, err := apiCfg.DB.GetFeedFollows(req.Context(), user.ID)
+
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Couldn't get feed follows: %s", err))
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, databaseFeedFollowsToFeedFollows(feedFollow))
+}
