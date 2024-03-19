@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/vnsonvo/RSS-Blog-Aggregator/internal/database"
@@ -42,6 +43,8 @@ func main() {
 	apiCfg := apiConfig{
 		DB: dbQueries,
 	}
+
+	go startScraping(dbQueries, 10, time.Minute)
 
 	mux := http.NewServeMux()
 
